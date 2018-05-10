@@ -1,0 +1,197 @@
+type ChildComment {
+  """The ID of an object"""
+  id: ID!
+  body: String
+  createdAt: String
+  parent: ParentComment
+  user: User
+}
+
+"""A connection to a list of items."""
+type ChildCommentConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ChildCommentEdge]
+}
+
+"""An edge in a connection."""
+type ChildCommentEdge {
+  """The item at the end of the edge"""
+  node: ChildComment
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Mutation {
+  addLike(objectId: String): Object
+  removeLike(objectId: String): Object
+  addFollow(userId: ID): User
+  removeFollow(userId: ID): User
+  newParentComment(input: NewParentCommentInput): NewParentCommentPayload
+  newChildComment(input: NewChildCommentInput): NewChildCommentPayload
+  updateProfile: Boolean
+  newObject(input: NewObjectInput): NewObjectPayload
+  deleteObject(objectId: ID): Boolean
+  updateUser(input: UpdateUserInput): User
+}
+
+input NewChildCommentInput {
+  body: String
+  parentCommentId: ID
+}
+
+type NewChildCommentPayload {
+  childCommentEdge: ChildCommentEdge
+}
+
+input NewObjectInput {
+  image: Int
+  body: String
+}
+
+type NewObjectPayload {
+  objectEdge: ObjectEdge
+}
+
+input NewParentCommentInput {
+  body: String
+  objectId: ID
+}
+
+type NewParentCommentPayload {
+  parentCommentEdge: ParentCommentEdge
+}
+
+type Object {
+  """The ID of an object"""
+  id: ID!
+  image: Int
+  body: String
+  createdAt: String
+  user: User
+  parentComments(after: String, first: Int, before: String, last: Int): ParentCommentConnection
+  doesViewerLike: Boolean
+  likeCount: Int
+  commentCount: Int
+}
+
+"""A connection to a list of items."""
+type ObjectConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ObjectEdge]
+}
+
+"""An edge in a connection."""
+type ObjectEdge {
+  """The item at the end of the edge"""
+  node: Object
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+type ParentComment {
+  """The ID of an object"""
+  id: ID!
+  body: String
+  createdAt: String
+  user: User
+  object: Object
+  childComments(after: String, first: Int, before: String, last: Int): ChildCommentConnection
+}
+
+"""A connection to a list of items."""
+type ParentCommentConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ParentCommentEdge]
+}
+
+"""An edge in a connection."""
+type ParentCommentEdge {
+  """The item at the end of the edge"""
+  node: ParentComment
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Query {
+  """The ID of an object"""
+  id: ID!
+  static: String
+  viewer: User
+  user(username: String): User
+  object(id: String): Object
+  feed(after: String, first: Int, before: String, last: Int): ObjectConnection
+  exploreUsers(after: String, first: Int, before: String, last: Int, tags: [String]): UserConnection
+  parentComment(id: ID): ParentComment
+}
+
+input UpdateUserInput {
+  name: String
+  biography: String
+  tags: String
+}
+
+type User {
+  """The ID of an object"""
+  id: ID!
+  username: String
+  name: String
+  biography: String
+  rawTags: String
+  createdAt: String
+  objects(after: String, first: Int, before: String, last: Int): ObjectConnection
+  tags: [UserTag]
+  doesViewerFollow: Boolean
+  objectCount: Int
+  followersCount: Int
+  followingCount: Int
+}
+
+"""A connection to a list of items."""
+type UserConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [UserEdge]
+}
+
+"""An edge in a connection."""
+type UserEdge {
+  """The item at the end of the edge"""
+  node: User
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type UserTag {
+  tag: String
+  user: User
+}

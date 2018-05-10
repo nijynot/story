@@ -3,31 +3,46 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@babel/core": "^7.0.0-beta.46",
+    "babel-plugin-relay": "^1.6.0",
+    "cross-env": "^5.1.5",
     "eslint": "4.9.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "2.7.0",
     "eslint-plugin-jsx-a11y": "6.0.2",
     "eslint-plugin-react": "7.4.0",
+    "graphql": "^0.13.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^8.0.0-beta.2",
     "jest-expo": "~27.0.0",
     "react-native-scripts": "1.14.0",
-    "react-test-renderer": "16.3.1"
+    "react-test-renderer": "16.3.1",
+    "relay-compiler": "^1.6.0",
+    "relay-devtools": "^1.4.0"
   },
-  "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
+  "main": "./src/index.js",
   "scripts": {
     "start": "react-native-scripts start",
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
-    "test": "jest"
+    "test": "jest",
+    "relay-compile": "relay-compiler --src ./src/views/ --schema ./graph/schema.graphql",
+    "build": "npm run relay-compile -- --watch"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
+    "core-js": "^2.5.6",
     "expo": "^27.0.1",
     "prop-types": "^15.6.1",
     "react": "16.3.1",
+    "react-dom": "^16.3.2",
     "react-native": "~0.55.2",
-    "react-navigation": "^2.0.1"
+    "react-native-keychain": "^3.0.0-rc.3",
+    "react-navigation": "^2.0.1",
+    "react-relay": "^1.6.0",
+    "relay-runtime": "^1.6.0"
   }
 }

@@ -39,6 +39,7 @@ import {
 } from 'react-native';
 import { Permissions } from 'expo';
 import { createStackNavigator } from 'react-navigation';
+import * as Keychain from 'react-native-keychain';
 
 import HomePage from './views/pages/Home/HomePage.js';
 import StoryPage from './views/pages/Story/StoryPage.js';
