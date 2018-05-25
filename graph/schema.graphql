@@ -85,6 +85,7 @@ type ObjectConnection {
 
   """A list of edges."""
   edges: [ObjectEdge]
+  totalCount: Int
 }
 
 """An edge in a connection."""
@@ -144,11 +145,14 @@ type Query {
   id: ID!
   static: String
   viewer: User
+  isLoggedIn: Boolean
   user(username: String): User
   object(id: String): Object
   feed(after: String, first: Int, before: String, last: Int): ObjectConnection
+  userFeed(after: String, first: Int, before: String, last: Int): UserConnection
   exploreUsers(after: String, first: Int, before: String, last: Int, tags: [String]): UserConnection
   parentComment(id: ID): ParentComment
+  search(q: String, after: String, first: Int, before: String, last: Int): UserConnection
 }
 
 input UpdateUserInput {

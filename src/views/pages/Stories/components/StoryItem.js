@@ -14,11 +14,14 @@ import { LinearGradient } from 'expo';
 
 const styles = StyleSheet.create({
   oddContainer: {
-    flex: 1,
-    height: 170,
+    borderRadius: 4,
+    flex: 0.5,
+    // height: 170,
+    aspectRatio: 0.7,
     position: 'relative',
     marginLeft: 10,
     marginRight: 5,
+    backgroundColor: '#fafafa',
     // marginBottom: 5,
     marginTop: 10,
     // backgroundColor: '#fff',
@@ -26,11 +29,14 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   evenContainer: {
-    flex: 1,
-    height: 170,
+    borderRadius: 4,
+    flex: 0.5,
+    // height: 170,
+    aspectRatio: 0.7,
     position: 'relative',
     marginLeft: 5,
     marginRight: 10,
+    backgroundColor: '#fafafa',
     // marginBottom: 5,
     marginTop: 10,
   },
@@ -70,16 +76,16 @@ class StoryItem extends React.Component {
   render() {
     return (
       <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Story', {
-        user: {
-          username: 'sama',
-        },
+        object: this.props.object,
+        user: this.props.object.user,
+        source: this.props.source,
       })}
       >
         <View style={(this.props.parity === 'even') ? styles.evenContainer : styles.oddContainer}>
           <Image
             resizeMode="cover"
             style={styles.image}
-            source={{ uri: this.props.source }}
+            source={{ uri: this.props.source, cache: 'reload' }}
           />
           <LinearGradient
             colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
@@ -90,7 +96,7 @@ class StoryItem extends React.Component {
                 20 hours ago
               </Text>
               <Text style={styles.username}>
-                Sam Altman @sama
+                {this.props.object.user.name} @{this.props.object.user.username || 'unknown'}
               </Text>
             </View>
           </LinearGradient>
@@ -101,6 +107,7 @@ class StoryItem extends React.Component {
 }
 
 StoryItem.propTypes = {
+  object: PropTypes.object.isRequired,
   parity: PropTypes.string.isRequired,
   source: PropTypes.string.isRequired,
 };
