@@ -1,0 +1,9 @@
+EditUserScreen ✓
+UpdateUserMutation ✓
+UpdateProfileMutation ✓
+Profile picture on top right ✓
+Login Flow ✓
+Register Flow
+Email field in Settings (Open a new screen)
+Video on hold
+Fix image flickering problem

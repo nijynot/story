@@ -6,6 +6,7 @@ import {
   ViewPagerAndroid,
   TouchableOpacity,
   Platform,
+  Image,
   // Dimensions,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -15,15 +16,23 @@ import {
   createFragmentContainer,
 } from 'react-relay';
 import { Permissions } from 'expo';
-import { Header, HeaderBackButton, withNavigation } from 'react-navigation';
+import { Header, HeaderBackButton, withNavigation, StackActions, NavigationActions } from 'react-navigation';
 import get from 'lodash/get';
+import base64 from 'base-64';
 
 import { modernEnvironment } from '../../environment.js';
 import CameraView from '../Camera/CameraView.js';
 import Stories from '../Stories/Stories.js';
-import UserScreen from '../User/UserScreen.js';
-import LoginScreen from '../Login/LoginScreen.js';
+// import UserScreen from '../User/UserScreen.js';
 
+function fromGlobalId(globalId) {
+  const unbasedGlobalId = base64.decode(globalId);
+  const delimiterPos = unbasedGlobalId.indexOf(':');
+  return {
+    type: unbasedGlobalId.substring(0, delimiterPos),
+    id: unbasedGlobalId.substring(delimiterPos + 1),
+  };
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -60,17 +69,12 @@ class HomePage extends React.Component {
   async componentWillMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
-    this.props.navigation.setParams({
-      user: {
-        ...this.props.query.viewer.user,
-      },
-    });
+    this.props.navigation.setParams({ user: this.props.query.viewer });
+    this.props.navigation.setParams({ seed: new Date().getTime() });
   }
   onChangePage(evt) {
     this.setState({ page: evt.nativeEvent.position });
-    this.props.navigation.setParams({
-      page: evt.nativeEvent.position,
-    });
+    this.props.navigation.setParams({ page: evt.nativeEvent.position });
   }
   render() {
     const { hasCameraPermission } = this.state;
@@ -119,20 +123,39 @@ const HomePageFragmentContainer = createFragmentContainer(withNavigation(HomePag
       viewer {
         id
         username
-        # ...UserScreen_viewer
       }
     }
   `,
 });
 
+// const HomePageRefetchContainer = createRefetchContainer(
+//   withNavigation(HomePage),
+//   {
+//     query: graphql`
+//       fragment HomePage_query on Query {
+//         ...Stories_query
+//         isLoggedIn
+//         viewer {
+//           id
+//           username
+//           # ...UserScreen_viewer
+//         }
+//       }
+//     `,
+//   },
+//   graphql`
+//     # Refetch query to be fetched upon calling refetch.
+//     # Notice that we re-use our fragment and the shape of this query matches our fragment spec.
+//     query HomePageRefetchQuery {
+//       ...HomePage_query
+//     }
+//   `,
+// );
+
 class HomePageQueryRenderer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.refresh = this.refresh.bind(this);
-  }
-  refresh() {
-    this.forceUpdate();
-  }
+  // constructor(props) {
+  //   super(props);
+  // }
   render() {
     return (
       <QueryRenderer
@@ -151,10 +174,16 @@ class HomePageQueryRenderer extends React.Component {
         render={({ err, props }) => {
           if (get(props, 'isLoggedIn', null)) {
             return <HomePageFragmentContainer query={props} />;
-          } else if (err) {
-            console.log(err);
           } else if (get(props, 'isLoggedIn', null) === false) {
-            return <LoginScreen refresh={this.refresh} />;
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [NavigationActions.navigate({ routeName: 'Login' })],
+            });
+            this.props.navigation.dispatch(resetAction);
+          }
+
+          if (err) {
+            console.log(err);
           }
           return <View />;
         }}
@@ -168,7 +197,9 @@ HomePageQueryRenderer.navigationOptions = ({ navigation, screenProps }) => {
     title: 'Home',
     header: () => {
       const page = navigation.getParam('page', 1);
-      const user = navigation.getParam('user', { username: null });
+      const user = navigation.getParam('user', { id: 'asdf', username: null });
+      const seed = navigation.getParam('seed', new Date().getTime());
+
       return (
         <View
           style={{
@@ -208,16 +239,18 @@ HomePageQueryRenderer.navigationOptions = ({ navigation, screenProps }) => {
                 alignSelf: 'center',
               }}
               onPress={() => navigation.navigate('User', {
-                user: { username: 'alice' },
+                user,
               })}
             >
-              <View style={{
-                width: 24,
-                height: 24,
-                marginRight: 20,
-                borderRadius: 24,
-                backgroundColor: '#ddd',
-              }}
+              <Image
+                style={{
+                  width: 28,
+                  height: 28,
+                  marginRight: 20,
+                  borderRadius: 24,
+                  // backgroundColor: '#ddd',
+                }}
+                source={{ uri: `http://192.168.1.213:1337/assets/u/${fromGlobalId(user.id).id}?${seed}`, cache: 'reload' }}
               />
             </TouchableOpacity>
           </View>

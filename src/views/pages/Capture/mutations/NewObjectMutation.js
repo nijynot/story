@@ -54,7 +54,7 @@ exports.NewObjectMutation = ({ environment, uploadables, image, body, parentId }
       parentID: parentId,
       connectionInfo: [{
         key: 'UserScreen_objects',
-        rangeBehavior: 'prepend',
+        rangeBehavior: 'append',
       }],
       edgeName: 'objectEdge',
     },
@@ -68,6 +68,7 @@ exports.NewObjectMutation = ({ environment, uploadables, image, body, parentId }
       configs,
       onCompleted: (res, err) => {
         if (err) console.error(err);
+        console.log(parentId);
         resolve(res);
       },
       onError: err => reject(err),

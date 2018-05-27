@@ -136,6 +136,8 @@ class CameraView extends React.Component {
     } else if (hasCameraPermission === false) {
       return <Text>No access to camera</Text>;
     }
+
+    console.log(this.props.user);
     return (
       <View
         style={{ flex: 1 }}

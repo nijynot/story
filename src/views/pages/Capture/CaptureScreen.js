@@ -142,8 +142,8 @@ export default class CaptureScreen extends React.Component {
                     // marginBottom: '50%',
                     width: '100%',
                     padding: 0,
-                    textShadowRadius: 4,
-                    textShadowColor: '#666',
+                    textShadowRadius: 2,
+                    textShadowColor: '#aaa',
                     textShadowOffset: { width: 0, height: 0.1 },
                   }}
                   autoCorrent={false}

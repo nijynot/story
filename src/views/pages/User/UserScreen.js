@@ -25,6 +25,7 @@ import isEmpty from 'lodash/isEmpty';
 import range from 'lodash/range';
 import base64 from 'base-64';
 import { LinearGradient } from 'expo';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { modernEnvironment } from '../../environment.js';
 
@@ -99,7 +100,7 @@ class UserScreen extends React.Component {
             alignItems: 'center',
             justifyContent: 'center',
             alignSelf: 'stretch',
-            paddingTop: 40,
+            paddingTop: 24,
             padding: 30,
             marginBottom: 30,
           }}
@@ -122,7 +123,7 @@ class UserScreen extends React.Component {
                   height: 120,
                   borderRadius: 100,
                 }}
-                source={{ uri: 'https://i.imgur.com/NCVkLV4.jpg' }}
+                source={{ uri: `http://192.168.1.213:1337/assets/u/${fromGlobalId(user.id).id}?${new Date().getTime()}` }}
               />
             </View>
             <View style={{ marginBottom: 8 }}>
@@ -197,7 +198,7 @@ class UserScreen extends React.Component {
                 </Text>
               </View>
             </View> */}
-            {(user.doesViewerFollow) ? (
+            {(user.doesViewerFollow && user.username !== this.props.query.viewer.username) ? (
               <TouchableOpacity
                 onPress={this.mutationRemoveFollow}
                 style={{
@@ -215,7 +216,8 @@ class UserScreen extends React.Component {
                   Unfollow
                 </Text>
               </TouchableOpacity>
-            ) : (
+            ) : null}
+            {(!user.doesViewerFollow && user.username !== this.props.query.viewer.username) ? (
               <TouchableOpacity
                 style={{
                   backgroundColor: 'black',
@@ -231,7 +233,26 @@ class UserScreen extends React.Component {
                   Follow
                 </Text>
               </TouchableOpacity>
-            )}
+            ) : null}
+            {(user.username === this.props.query.viewer.username) ? (
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('SettingsGeneral')}
+                style={{
+                  borderWidth: 1,
+                  borderColor: 'black',
+                  backgroundColor: 'white',
+                  width: 240,
+                  padding: 6,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 4,
+                }}
+              >
+                <Text style={{ color: 'black' }}>
+                  Edit profile
+                </Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
           <View style={{
             justifyContent: 'center',
@@ -294,6 +315,10 @@ UserScreen.propTypes = {
 const UserScreenFragmentContainer = createFragmentContainer(withNavigation(UserScreen), {
   query: graphql`
     fragment UserScreen_query on Query {
+      viewer {
+        id
+        username
+      }
       user(username: $username) {
         id
         name
@@ -358,6 +383,22 @@ UserScreenQueryRenderer.navigationOptions = ({ navigation }) => ({
   header: (headerProps) => {
     return <Header {...headerProps} />;
   },
+  headerRight: (
+    <View>
+      <TouchableOpacity onPress={() => navigation.navigate('SettingsAccount')}>
+        <View style={{
+          paddingRight: 8,
+        }}
+        >
+          <MaterialIcons
+            name="more-vert"
+            color="#000"
+            size={24}
+          />
+        </View>
+      </TouchableOpacity>
+    </View>
+  ),
   headerStyle: {
     backgroundColor: 'white',
     elevation: 0,

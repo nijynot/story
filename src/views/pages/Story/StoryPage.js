@@ -18,6 +18,7 @@ import {
   graphql,
   QueryRenderer,
   createFragmentContainer,
+  createPaginationContainer,
 } from 'react-relay';
 import findIndex from 'lodash/findIndex';
 import clamp from 'lodash/clamp';
@@ -41,14 +42,6 @@ function fromGlobalId(globalId) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // flexDirection: 'row',
-    // marginTop: 43,
-    // marginRight: 10,
-    // marginBottom: 10,
-    // marginLeft: 10,
-    // backgroundColor: '#fff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   image: {
     flex: 1,
@@ -66,8 +59,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     borderWidth: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
   backward: {
     flex: 1,
@@ -75,21 +66,7 @@ const styles = StyleSheet.create({
   forward: {
     flex: 2,
   },
-  hintCommentSection: {
-    position: 'absolute',
-    height: '20%',
-    right: 0,
-    bottom: 0,
-    // top: 0,
-    left: 0,
-    zIndex: 100,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingTop: 10,
-    paddingRight: 16,
-    paddingBottom: 10,
-    paddingLeft: 16,
-    overflow: 'hidden',
-  },
+
   commentText: {
     color: 'white',
     fontSize: 12,
@@ -99,7 +76,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    // bottom: '20%',
     height: '20%',
   },
 });
@@ -115,6 +91,7 @@ class StoryPage extends React.Component {
       dy: new Animated.Value(0),
     };
     this.shiftIndex = this.shiftIndex.bind(this);
+    this._loadMore = this._loadMore.bind(this);
   }
   componentWillMount() {
     this._panResponder = PanResponder.create({
@@ -179,6 +156,10 @@ class StoryPage extends React.Component {
     const max = this.props.query.user.objects.edges.length - 1;
     const min = 0;
 
+    if (((this.state.index + amount + 1) % 5) === 0) {
+      this._loadMore();
+    }
+
     if (
       this.state.index + amount > max ||
       this.state.index + amount < min
@@ -189,6 +170,19 @@ class StoryPage extends React.Component {
         index: clamp(this.state.index + amount, min, max),
       });
     }
+  }
+  _loadMore() {
+    console.log(this.props.relay.hasMore());
+    if (!this.props.relay.hasMore() || this.props.relay.isLoading()) {
+      return;
+    }
+
+    this.props.relay.loadMore(
+      5, // Fetch the next 10 feed items
+      (error) => {
+        console.log(error);
+      },
+    );
   }
   render() {
     // const object = this.props.navigation.getParam('object', null);
@@ -240,24 +234,29 @@ class StoryPage extends React.Component {
             </TouchableWithoutFeedback>
           </View>
         </View>
-        {/* <TouchableWithoutFeedback
-          onPress={() => {
-            this.props.navigation.navigate('Comment', {
-              object,
-            });
-          }}
+        <View style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
         >
-          <View
-            style={styles.hintCommentSection}
+          <Text style={{
+            fontWeight: '700',
+            color: 'white',
+            fontSize: 18,
+            textShadowRadius: 2,
+            textShadowColor: '#aaa',
+            textShadowOffset: { width: 0, height: 0.1 },
+          }}
           >
-            {object.parentComments.edges.map(edge => (
-              <PeekCommentItem
-                key={edge.node.id}
-                comment={edge.node}
-              />
-            ))}
-          </View>
-        </TouchableWithoutFeedback> */}
+            {object.body}
+          </Text>
+        </View>
         <View style={{
           position: 'absolute',
           top: 0,
@@ -268,14 +267,15 @@ class StoryPage extends React.Component {
           // right: 16,
         }}
         >
-          <View
+          <Image
             style={{
               width: 28,
               height: 28,
               borderRadius: 100,
-              backgroundColor: '#fafafa',
+              // backgroundColor: '#fafafa',
               marginRight: 16,
             }}
+            source={{ uri: `http://192.168.1.213:1337/assets/u/${fromGlobalId(this.props.query.user.id).id}`, cache: 'reload' }}
           />
           <View style={{ flexDirection: 'row' }}>
             <Text style={{
@@ -306,13 +306,6 @@ class StoryPage extends React.Component {
               {object.createdAt}
             </Text>
           </View>
-          {/* <Text style={{
-            color: 'white',
-            fontSize: 21,
-          }}
-          >
-            {this.state.index + 1} / {this.props.query.user.objectCount}
-          </Text> */}
         </View>
         <TouchableWithoutFeedback
           onPress={() => {
@@ -370,27 +363,94 @@ StoryPage.propTypes = {
   query: PropTypes.object.isRequired,
 };
 
-const StoryPageFragmentContainer = createFragmentContainer(withNavigation(StoryPage), {
-  query: graphql`
-    fragment StoryPage_query on Query {
-      user(username: $username) {
-        id
-        username
-        objectCount
-        objects(first: 10) @connection(key: "StoryPage_objects") {
-          edges {
-            node {
-              id
-              image
-              createdAt
-              commentCount
+/* react-relay */
+const StoryPagePaginationContainer = createPaginationContainer(
+  withNavigation(StoryPage),
+  {
+    query: graphql`
+      fragment StoryPage_query on Query
+      @argumentDefinitions(
+        username: { type: "String" }
+        first: { type: "Int", defaultValue: 10 }
+        after: { type: "String" }
+        # orderby: {type: "[FriendsOrdering]", defaultValue: [DATE_ADDED]}
+      ) {
+        user(username: $username) {
+          id
+          username
+          objectCount
+          objects(
+            first: $first
+            after: $after
+          ) @connection(key: "StoryPage_objects") {
+            edges {
+              node {
+                id
+                image
+                body
+                createdAt
+                commentCount
+              }
+              cursor
             }
           }
         }
       }
-    }
-  `,
-});
+    `,
+  },
+  {
+    direction: 'forward',
+    getConnectionFromProps(props) {
+      return props.query.user.objects;
+    },
+    // This is also the default implementation of `getFragmentVariables` if it isn't provided.
+    // getFragmentVariables(prevVars, totalCount) {
+    //   return {
+    //     ...prevVars,
+    //     count: totalCount,
+    //   };
+    // },
+    getVariables(props, { count, cursor }, fragmentVariables) {
+      return {
+        first: count,
+        after: cursor,
+        username: props.query.user.username,
+        // orderBy: fragmentVariables.orderBy,
+        // userID isn't specified as an @argument for the fragment, but it should be a variable available for the fragment under the query root.
+        // userID: fragmentVariables.userID,
+      };
+    },
+    query: graphql`
+      # Pagination query to be fetched upon calling loadMore.
+      # Notice that we re-use our fragment, and the shape of this query matches our fragment spec.
+      query StoryPagePaginationQuery($username: String!, $first: Int!, $after: String) {
+        ...StoryPage_query @arguments(username: $username, first: $first, after: $after)
+      }
+    `,
+  }
+);
+
+// const StoryPageFragmentContainer = createFragmentContainer(withNavigation(StoryPage), {
+//   query: graphql`
+//     fragment StoryPage_query on Query {
+//       user(username: $username) {
+//         id
+//         username
+//         objectCount
+//         objects(first: 10) @connection(key: "StoryPage_objects") {
+//           edges {
+//             node {
+//               id
+//               image
+//               createdAt
+//               commentCount
+//             }
+//           }
+//         }
+//       }
+//     }
+//   `,
+// });
 
 class StoryPageQueryRenderer extends React.Component {
   render() {
@@ -399,13 +459,13 @@ class StoryPageQueryRenderer extends React.Component {
         environment={modernEnvironment}
         query={graphql`
           query StoryPageQuery($username: String!) {
-            ...StoryPage_query
+            ...StoryPage_query @arguments(username: $username)
           }
         `}
         variables={{ username: this.props.navigation.getParam('user').username }}
         render={({ err, props }) => {
           if (props) {
-            return <StoryPageFragmentContainer query={props} />;
+            return <StoryPagePaginationContainer query={props} />;
           } else if (err) console.log(err);
           return (
             <View
@@ -418,6 +478,7 @@ class StoryPageQueryRenderer extends React.Component {
   }
 }
 
+/* react-navigation */
 function forVertical(props) {
   const { layout, position, scene } = props;
 
@@ -436,11 +497,6 @@ function forVertical(props) {
 }
 
 StoryPageQueryRenderer.navigationOptions = {
-  // header: () => (
-  //   <Text>
-  //     test
-  //   </Text>
-  // ),
   transitionConfig: () => ({
     transitionSpec: {
       duration: 300,

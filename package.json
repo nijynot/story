@@ -44,6 +44,7 @@
     "react-dom": "^16.3.2",
     "react-native": "~0.55.2",
     "react-native-cookies": "^3.3.0",
+    "react-native-keyboard-aware-scroll-view": "^0.5.0",
     "react-native-keychain": "^3.0.0-rc.3",
     "react-navigation": "^2.0.1",
     "react-relay": "^1.6.0",

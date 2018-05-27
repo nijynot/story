@@ -9,19 +9,16 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   TextInput,
-  Button,
+  TouchableOpacity,
 } from 'react-native';
-import { withNavigation } from 'react-navigation';
+import { withNavigation, StackActions, NavigationActions } from 'react-navigation';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1500,
-  },
-  image: {
-    flex: 1,
   },
 });
 
@@ -52,9 +49,15 @@ export default class LoginScreen extends React.Component {
     })
     // .then(res => res.text())
     .then((res) => {
-      console.log(res);
+      // this.props.navigation.goBack();
+      // this.props.navigation.replace('Home');
+      // console.log(res);
+      const resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Home' })],
+      });
+      this.props.navigation.dispatch(resetAction);
     })
-    .then(() => { this.props.refresh(); })
     .catch(err => console.log(err));
   }
   onPressLogout() {
@@ -84,36 +87,142 @@ export default class LoginScreen extends React.Component {
   }
   render() {
     return (
-      <View style={styles.container}>
-        <StatusBar hidden />
-        <Text>Login</Text>
-        <TextInput
-          onChangeText={text => this.setState({ username: text })}
-          value={this.state.username}
-        />
-        <TextInput
-          onChangeText={text => this.setState({ password: text })}
-          value={this.state.password}
-          secureTextEntry
-        />
-        <Button
-          onPress={this.onPressLogin}
-          title="Login"
-        />
-        <Button
-          onPress={this.checkLogin}
-          title="Check Login status"
-        />
-        <Button
-          onPress={this.onPressLogout}
-          title="Logout"
-        />
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      >
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: 24,
+          }}
+          style={{
+            flex: 1,
+            width: '100%',
+          }}
+        >
+          <StatusBar hidden />
+          {/* <Text>Login</Text> */}
+          <Text style={{
+            color: '#aaa',
+            fontWeight: '700',
+            alignSelf: 'flex-start',
+          }}
+          >
+            Username
+          </Text>
+          <TextInput
+            style={{
+              fontSize: 16,
+              width: '100%',
+              borderWidth: 1,
+              borderColor: '#e0e0e0',
+              backgroundColor: '#fafafa',
+              paddingTop: 8,
+              paddingRight: 12,
+              paddingBottom: 8,
+              paddingLeft: 12,
+              borderRadius: 4,
+              marginBottom: 8,
+            }}
+            // placeholder="Username"
+            onChangeText={text => this.setState({ username: text })}
+            value={this.state.username}
+            underlineColorAndroid="transparent"
+          />
+          <Text style={{
+            color: '#aaa',
+            fontWeight: '700',
+            alignSelf: 'flex-start',
+          }}
+          >
+            Password
+          </Text>
+          <TextInput
+            style={{
+              fontSize: 16,
+              width: '100%',
+              borderWidth: 1,
+              borderColor: '#e0e0e0',
+              backgroundColor: '#fafafa',
+              paddingTop: 8,
+              paddingRight: 12,
+              paddingBottom: 8,
+              paddingLeft: 12,
+              borderRadius: 4,
+              marginBottom: 16,
+            }}
+            // placeholder="Password"
+            onChangeText={text => this.setState({ password: text })}
+            value={this.state.password}
+            secureTextEntry
+            underlineColorAndroid="transparent"
+          />
+          <TouchableOpacity
+            style={{
+              width: '100%',
+              borderColor: '#444',
+              borderWidth: 1,
+              borderRadius: 40,
+              paddingTop: 12,
+              paddingRight: 12,
+              paddingBottom: 12,
+              paddingLeft: 12,
+              marginBottom: 8,
+            }}
+            onPress={this.onPressLogin}
+          >
+            <View style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            >
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '700',
+              }}
+              >
+                Login
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              borderRadius: 40,
+              width: '100%',
+              paddingTop: 12,
+              paddingRight: 12,
+              paddingBottom: 12,
+              paddingLeft: 12,
+              backgroundColor: 'black',
+            }}
+            onPress={() => this.props.navigation.navigate('Register')}
+          >
+            <View style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            >
+              <Text style={{
+                color: 'white',
+                fontSize: 16,
+                fontWeight: '700',
+              }}
+              >
+                Register
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </KeyboardAwareScrollView>
       </View>
     );
   }
 }
 
 LoginScreen.propTypes = {
-  refresh: PropTypes.func.isRequired,
   // query: PropTypes.object.isRequired,
 };

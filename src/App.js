@@ -46,6 +46,7 @@ import get from 'lodash/get';
 // import StackViewStyleInterpolator from 'react-navigation/src/views/StackView/StackViewStyleInterpolator.js';
 import StackViewTransitionConfigs from 'react-navigation/src/views/StackView/StackViewTransitionConfigs.js';
 
+import RootScreen from './views/pages/Root/RootScreen.js';
 import HomePage from './views/pages/Home/HomePage.js';
 import StoryPage from './views/pages/Story/StoryPage.js';
 import LoginScreen from './views/pages/Login/LoginScreen.js';
@@ -54,6 +55,10 @@ import CommentScreen from './views/pages/Comment/CommentScreen.js';
 import UserScreen from './views/pages/User/UserScreen.js';
 import PublishScreen from './views/pages/Publish/PublishScreen.js';
 import PublishReplyScreen from './views/pages/PublishReply/PublishReplyScreen.js';
+import SettingsGeneralScreen from './views/pages/SettingsGeneral/SettingsGeneralScreen.js';
+import SettingsAccountScreen from './views/pages/SettingsAccount/SettingsAccountScreen.js';
+import RegisterScreen from './views/pages/Register/RegisterScreen.js';
+import RegisterPasswordScreen from './views/pages/RegisterPassword/RegisterPasswordScreen.js';
 // import Stories from './views/pages/Stories/Stories.js';
 
 const styles = StyleSheet.create({
@@ -133,6 +138,7 @@ function fromBottom(props) {
 }
 
 const RootStack = createStackNavigator({
+  Root: RootScreen,
   Home: HomePage,
   Story: StoryPage,
   Login: LoginScreen,
@@ -141,6 +147,10 @@ const RootStack = createStackNavigator({
   User: UserScreen,
   Publish: PublishScreen,
   PublishReply: PublishReplyScreen,
+  SettingsGeneral: SettingsGeneralScreen,
+  SettingsAccount: SettingsAccountScreen,
+  Register: RegisterScreen,
+  RegisterPassword: RegisterPasswordScreen,
 }, {
   headerMode: 'screen',
   mode: 'card',
@@ -185,12 +195,13 @@ const RootStack = createStackNavigator({
       (get(props.scenes[index], 'route.routeName', null) === 'User' &&
       get(props.scenes[index - 1], 'route.routeName', null) === 'Home') ||
       (get(props.scenes[index + 1], 'route.routeName', null) === 'User' &&
-      get(props.scenes[index], 'route.routeName', null) === 'Home')
+      get(props.scenes[index], 'route.routeName', null) === 'Home') ||
+      get(props.scenes[index], 'route.routeName', null) === 'SettingsGeneral' ||
+      get(props.scenes[index - 1], 'route.routeName', null) === 'User'
     ) {
       return {
         transitionSpec: {
           duration: 300,
-          // easing: Easing.out(Easing.poly(3)),
           easing: Easing.out(Easing.exp),
           timing: Animated.timing,
         },
@@ -198,10 +209,25 @@ const RootStack = createStackNavigator({
       };
     }
 
+    // if (
+    //   get(props.scenes[index], 'route.routeName', null) === 'Register' ||
+    //   get(props.scenes[index], 'route.routeName', null) === 'RegisterPassword'
+    // ) {
+    //   return {
+    //     transitionSpec: {
+    //       duration: 0,
+    //       easing: Easing.out(Easing.exp),
+    //       timing: Animated.timing,
+    //     },
+    //     screenInterpolator: null,
+    //   };
+    // }
+
     return {
       transitionSpec: {
         duration: 300,
-        easing: Easing.out(Easing.poly(3)),
+        // easing: Easing.out(Easing.poly(3)),
+        easing: Easing.out(Easing.exp),
         timing: Animated.timing,
       },
       screenInterpolator: fromBottom,
