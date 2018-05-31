@@ -24,6 +24,8 @@ import findIndex from 'lodash/findIndex';
 import clamp from 'lodash/clamp';
 import base64 from 'base-64';
 import { LinearGradient } from 'expo';
+import { Feather } from '@expo/vector-icons';
+import moment from 'moment';
 
 // import StoryItem from './components/StoryItem.js';
 import { modernEnvironment } from '../../environment.js';
@@ -72,11 +74,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   gradient: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '20%',
+    // position: 'absolute',
+    // left: 0,
+    // right: 0,
+    // bottom: 0,
+    // height: '20%',
   },
 });
 
@@ -125,11 +127,11 @@ class StoryPage extends React.Component {
         // The user has released all touches while this view is the
         // responder. This typically means a gesture has succeeded
         if (
-          gestureState.dy >= 150 ||
+          gestureState.dy >= 50 ||
           gestureState.vy > 2
         ) {
           this.props.navigation.goBack();
-        } else if (gestureState.dy <= -80) {
+        } else if (gestureState.dy <= -35) {
           this.props.navigation.navigate('Comment', {
             object: this.props.query.user.objects.edges[this.state.index].node,
           });
@@ -237,29 +239,6 @@ class StoryPage extends React.Component {
         <View style={{
           position: 'absolute',
           top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        >
-          <Text style={{
-            fontWeight: '700',
-            color: 'white',
-            fontSize: 18,
-            textShadowRadius: 2,
-            textShadowColor: '#aaa',
-            textShadowOffset: { width: 0, height: 0.1 },
-          }}
-          >
-            {object.body}
-          </Text>
-        </View>
-        <View style={{
-          position: 'absolute',
-          top: 0,
           flexDirection: 'row',
           margin: 18,
           justifyContent: 'center',
@@ -277,15 +256,15 @@ class StoryPage extends React.Component {
             }}
             source={{ uri: `http://192.168.1.213:1337/assets/u/${fromGlobalId(this.props.query.user.id).id}`, cache: 'reload' }}
           />
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'column' }}>
             <Text style={{
               color: 'white',
-              fontSize: 13,
-              textShadowColor: '#444',
+              fontSize: 15,
+              textShadowColor: 'rgba(0, 0, 0, 0.6)',
               textShadowOffset: {
-                width: 0, height: 0.1,
+                width: 0, height: 0.3,
               },
-              textShadowRadius: 8,
+              textShadowRadius: 4,
               marginRight: 8,
               fontWeight: '700',
             }}
@@ -293,21 +272,22 @@ class StoryPage extends React.Component {
               {this.props.query.user.username}
             </Text>
             <Text style={{
-              fontSize: 13,
-              textShadowColor: '#444',
+              fontSize: 12,
+              textShadowColor: 'rgba(0, 0, 0, 0.6)',
               textShadowOffset: {
-                width: 0, height: 0.1,
+                width: 0, height: 0.3,
               },
-              textShadowRadius: 8,
-              fontWeight: '700',
-              color: 'rgba(255, 255, 255, 0.6)',
+              textShadowRadius: 4,
+              color: 'white',
+              position: 'relative',
+              top: -3,
             }}
             >
-              {object.createdAt}
+              {moment(moment.utc(object.createdAt)).fromNow()}
             </Text>
           </View>
         </View>
-        <TouchableWithoutFeedback
+        {/* <TouchableWithoutFeedback
           onPress={() => {
             this.props.navigation.navigate('Comment', {
               object,
@@ -321,7 +301,7 @@ class StoryPage extends React.Component {
             ]}
             style={styles.gradient}
           />
-        </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback> */}
         <TouchableWithoutFeedback
           onPress={() => {
             this.props.navigation.navigate('Comment', {
@@ -333,25 +313,61 @@ class StoryPage extends React.Component {
             position: 'absolute',
             bottom: 0,
             left: 0,
-            padding: 18,
             right: 0,
             zIndex: 1000,
           }}
           >
-            <Text
-              style={{
-                color: 'white',
-                fontSize: 14,
-                textShadowColor: '#000',
-                textShadowOffset: {
-                  width: 0, height: 1,
-                },
-                textShadowRadius: 4,
-                fontWeight: '700',
-              }}
+            {/* <View style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
             >
-              {object.commentCount} comments
-            </Text>
+            </View> */}
+            <LinearGradient
+              colors={[
+                'transparent',
+                'rgba(0, 0, 0, 0.75)',
+              ]}
+              style={{ padding: 24 }}
+            >
+              <Text style={{
+                // fontWeight: '700',
+                color: 'white',
+                fontSize: 16,
+                textShadowRadius: 4,
+                textShadowColor: 'rgba(0, 0, 0, 0.6)',
+                textShadowOffset: {
+                  width: 0, height: 0.3,
+                },
+              }}
+              >
+                {object.body}
+              </Text>
+              <View style={{ marginTop: 16, flexDirection: 'row' }}>
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: 16,
+                    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+                    textShadowOffset: {
+                      width: 0, height: 0.3,
+                    },
+                    textShadowRadius: 4,
+                    fontWeight: '700',
+                    marginRight: 8,
+                  }}
+                >
+                  {object.commentCount}156
+                </Text>
+                <Feather name="message-square" color="white" size={24} />
+              </View>
+            </LinearGradient>
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>

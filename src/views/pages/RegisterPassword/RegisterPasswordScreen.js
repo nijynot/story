@@ -162,7 +162,7 @@ class RegisterPasswordScreen extends React.Component {
               fontWeight: '700',
             }}
             >
-              Continue
+              Next
             </Text>
           </View>
         </TouchableOpacity>

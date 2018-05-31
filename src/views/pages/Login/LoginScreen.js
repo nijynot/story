@@ -10,6 +10,7 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
+  TouchableHighlight,
 } from 'react-native';
 import { withNavigation, StackActions, NavigationActions } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -91,9 +92,10 @@ export default class LoginScreen extends React.Component {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        margin: 24,
       }}
       >
-        <KeyboardAwareScrollView
+        {/* <KeyboardAwareScrollView
           contentContainerStyle={{
             flex: 1,
             alignItems: 'center',
@@ -104,103 +106,82 @@ export default class LoginScreen extends React.Component {
             flex: 1,
             width: '100%',
           }}
+        > */}
+        <StatusBar hidden />
+        {/* <Text>Login</Text> */}
+        {/* <Text style={{
+          color: '#aaa',
+          fontWeight: '700',
+          alignSelf: 'flex-start',
+          paddingLeft: 16,
+          paddingBottom: 2,
+        }}
         >
-          <StatusBar hidden />
-          {/* <Text>Login</Text> */}
-          <Text style={{
-            color: '#aaa',
-            fontWeight: '700',
-            alignSelf: 'flex-start',
+          Username
+        </Text> */}
+        <TextInput
+          style={{
+            fontSize: 16,
+            width: '100%',
+            backgroundColor: '#f4f4f4',
+            paddingTop: 8,
+            paddingRight: 12,
+            paddingBottom: 8,
+            paddingLeft: 16,
+            borderRadius: 30,
+            marginBottom: 8,
           }}
-          >
-            Username
-          </Text>
-          <TextInput
-            style={{
-              fontSize: 16,
-              width: '100%',
-              borderWidth: 1,
-              borderColor: '#e0e0e0',
-              backgroundColor: '#fafafa',
-              paddingTop: 8,
-              paddingRight: 12,
-              paddingBottom: 8,
-              paddingLeft: 12,
-              borderRadius: 4,
-              marginBottom: 8,
-            }}
-            // placeholder="Username"
-            onChangeText={text => this.setState({ username: text })}
-            value={this.state.username}
-            underlineColorAndroid="transparent"
-          />
-          <Text style={{
-            color: '#aaa',
-            fontWeight: '700',
-            alignSelf: 'flex-start',
+          placeholder="Username"
+          onChangeText={text => this.setState({ username: text })}
+          value={this.state.username}
+          underlineColorAndroid="transparent"
+        />
+        {/* <Text style={{
+          color: '#aaa',
+          fontWeight: '700',
+          alignSelf: 'flex-start',
+          paddingLeft: 16,
+          paddingBottom: 2,
+        }}
+        >
+          Password
+        </Text> */}
+        <TextInput
+          style={{
+            fontSize: 16,
+            width: '100%',
+            backgroundColor: '#f4f4f4',
+            paddingTop: 8,
+            paddingRight: 12,
+            paddingBottom: 8,
+            paddingLeft: 16,
+            borderRadius: 30,
+            marginBottom: 8,
           }}
-          >
-            Password
-          </Text>
-          <TextInput
+          placeholder="Password"
+          onChangeText={text => this.setState({ password: text })}
+          value={this.state.password}
+          secureTextEntry
+          underlineColorAndroid="transparent"
+        />
+        <View style={{
+          flexDirection: 'row',
+          // alignSelf: 'flex-end',
+        }}
+        >
+          <TouchableHighlight
             style={{
-              fontSize: 16,
-              width: '100%',
-              borderWidth: 1,
-              borderColor: '#e0e0e0',
-              backgroundColor: '#fafafa',
-              paddingTop: 8,
-              paddingRight: 12,
-              paddingBottom: 8,
-              paddingLeft: 12,
-              borderRadius: 4,
-              marginBottom: 16,
-            }}
-            // placeholder="Password"
-            onChangeText={text => this.setState({ password: text })}
-            value={this.state.password}
-            secureTextEntry
-            underlineColorAndroid="transparent"
-          />
-          <TouchableOpacity
-            style={{
-              width: '100%',
-              borderColor: '#444',
-              borderWidth: 1,
               borderRadius: 40,
+              width: 150,
+              // flex: 1,
               paddingTop: 12,
-              paddingRight: 12,
+              paddingRight: 16,
               paddingBottom: 12,
-              paddingLeft: 12,
-              marginBottom: 8,
+              paddingLeft: 16,
+              backgroundColor: '#000',
             }}
             onPress={this.onPressLogin}
-          >
-            <View style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            >
-              <Text style={{
-                fontSize: 16,
-                fontWeight: '700',
-              }}
-              >
-                Login
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              borderRadius: 40,
-              width: '100%',
-              paddingTop: 12,
-              paddingRight: 12,
-              paddingBottom: 12,
-              paddingLeft: 12,
-              backgroundColor: 'black',
-            }}
-            onPress={() => this.props.navigation.navigate('Register')}
+            underlayColor="#333"
           >
             <View style={{
               alignItems: 'center',
@@ -213,11 +194,37 @@ export default class LoginScreen extends React.Component {
                 fontWeight: '700',
               }}
               >
-                Register
+                Sign in
               </Text>
             </View>
-          </TouchableOpacity>
-        </KeyboardAwareScrollView>
+          </TouchableHighlight>
+        </View>
+        <TouchableOpacity
+          style={{
+            borderRadius: 40,
+            paddingTop: 8,
+            paddingRight: 12,
+            paddingBottom: 10,
+            paddingLeft: 12,
+            // backgroundColor: 'black',
+          }}
+          onPress={() => this.props.navigation.navigate('Register')}
+        >
+          <View style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          >
+            <Text style={{
+              color: 'black',
+              fontSize: 14,
+              // fontWeight: '700',
+            }}
+            >
+              or  <Text style={{ fontWeight: '700', color: 'rgb(20, 20, 245)' }}>Sign Up</Text>
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }

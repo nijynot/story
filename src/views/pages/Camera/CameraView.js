@@ -15,6 +15,7 @@ import {
   Button,
 } from 'react-native';
 import { Camera, Permissions } from 'expo';
+import { RNCamera } from 'react-native-camera';
 import { withNavigation } from 'react-navigation';
 
 class CameraView extends React.Component {
@@ -99,24 +100,34 @@ class CameraView extends React.Component {
       },
     });
   }
-  onPressCapture() {
-    console.log('Capture!');
-    this.camera.takePictureAsync({
-      quality: 0,
-      base64: true,
-      exif: true,
-    })
-    .then((res) => {
-      console.log(res);
+  async onPressCapture() {
+    if (this.camera) {
+      const options = { quality: 0.5, base64: true };
+      const data = await this.camera.takePictureAsync(options);
       this.props.navigation.navigate('Capture', {
         environment: this.props.environment,
         user: this.props.user,
-        source: res.uri,
+        source: data.uri,
       });
-      // this.setState({
-      //   image: { ...res },
-      // });
-    });
+      console.log(data.uri);
+    }
+    // console.log('Capture!');
+    // this.camera.takePictureAsync({
+    //   quality: 0,
+    //   base64: true,
+    //   exif: true,
+    // })
+    // .then((res) => {
+    //   console.log(res);
+    //   this.props.navigation.navigate('Capture', {
+    //     environment: this.props.environment,
+    //     user: this.props.user,
+    //     source: res.uri,
+    //   });
+    //   // this.setState({
+    //   //   image: { ...res },
+    //   // });
+    // });
   }
   onPressClose() {
     this.setState({
@@ -143,15 +154,16 @@ class CameraView extends React.Component {
         style={{ flex: 1 }}
         {...this._panResponder.panHandlers}
       >
-        <Camera
+        <RNCamera
           ref={(ref) => { this.camera = ref; }}
           style={{
             flex: 1,
             zIndex: 1,
           }}
-          ratio="5:3"
-          type={this.state.type}
-          autoFocus={Camera.Constants.AutoFocus.on}
+          type={RNCamera.Constants.Type.back}
+          flashMode={RNCamera.Constants.FlashMode.on}
+          permissionDialogTitle="Permission to use camera"
+          permissionDialogMessage="We need your permission to use your camera phone"
         >
           <View
             style={{
@@ -163,53 +175,23 @@ class CameraView extends React.Component {
               paddingBottom: 30,
             }}
           >
-            {/* <TouchableOpacity
-              style={{
-                alignSelf: 'flex-end',
-                alignItems: 'center',
-              }}
-              onPress={() => {
-                this.setState({
-                  type: this.state.type === Camera.Constants.Type.back
-                    ? Camera.Constants.Type.front
-                    : Camera.Constants.Type.back,
-                });
-              }}
-            >
-              <Text
-                style={{ fontSize: 18, marginBottom: 10, color: 'white' }}
-              >
-                {' '}Flip{' '}
-              </Text>
-            </TouchableOpacity> */}
             <View style={{
               position: 'relative',
               borderRadius: 50,
               width: 80,
               height: 80,
               backgroundColor: 'rgba(255, 255, 255, 0.5)',
-              // flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
-              // opacity: 0.5,
             }}
             >
               <TouchableOpacity
                 style={{
-                  // flex: 1,
-                  // justifyContent: 'center',
-                  // alignItems: 'center',
                 }}
-                // underlayColor="red"
                 onPress={this.onPressCapture}
               >
                 <View
                   style={{
-                    // position: 'absolute',
-                    // top: 0,
-                    // left: 0,
-                    // right: 0,
-                    // bottom: 0,
                     borderRadius: 35,
                     width: 60,
                     height: 60,
@@ -219,21 +201,8 @@ class CameraView extends React.Component {
                 />
               </TouchableOpacity>
             </View>
-            {/* <TouchableOpacity
-              style={{
-                alignSelf: 'flex-end',
-                alignItems: 'center',
-              }}
-              onPress={this.getRatio}
-            >
-              <Text
-                style={{ fontSize: 18, marginBottom: 10, color: 'white' }}
-              >
-                {' '}Ratio{' '}
-              </Text>
-            </TouchableOpacity> */}
           </View>
-        </Camera>
+        </RNCamera>
       </View>
     );
   }

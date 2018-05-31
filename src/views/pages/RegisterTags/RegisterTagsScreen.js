@@ -82,7 +82,7 @@ class RegisterTagsScreen extends React.Component {
           marginBottom: 8,
         }}
         >
-          Choose a password
+          What are your interests?
         </Text>
         <Text style={{
           color: '#aaa',
@@ -133,7 +133,7 @@ class RegisterTagsScreen extends React.Component {
               fontWeight: '700',
             }}
             >
-
+              Continue
             </Text>
           </View>
         </TouchableOpacity>
@@ -150,11 +150,7 @@ const RegisterTagsScreenFragmentContainer
   = createFragmentContainer(withNavigation(RegisterTagsScreen), {
     query: graphql`
       fragment RegisterTagsScreen_query on Query {
-        viewer {
-          id
-          name
-          username
-        }
+        popularTags
       }
     `,
   });

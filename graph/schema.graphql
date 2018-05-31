@@ -153,6 +153,7 @@ type Query {
   exploreUsers(after: String, first: Int, before: String, last: Int, tags: [String]): UserConnection
   parentComment(id: ID): ParentComment
   search(q: String, after: String, first: Int, before: String, last: Int): UserConnection
+  popularTags: [String]
 }
 
 input UpdateUserInput {

@@ -7,3 +7,4 @@ Register Flow
 Email field in Settings (Open a new screen)
 Video on hold
 Fix image flickering problem
+Change the ViewPager to react-navigation pages
